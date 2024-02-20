@@ -1,0 +1,17 @@
+{
+  "name": "playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "localserver.js",
+  "scripts": {
+    "dev": "nodemon test/local.js",
+    "emhtml": "emrun test/index.html --browser firefox",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^3.0.3"
+  }
+}
