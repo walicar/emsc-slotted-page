@@ -8,16 +8,21 @@
 SDL_Surface *screen = NULL;
 SDL_Surface *image = NULL;
 
-typedef struct
-{
-    int thread_id;
-    double *sum;
-} Arg;
-
 static bool is_running = false;
 
-bool init_sdl()
+const int BUTTON_WIDTH = 300;
+const int BUTTON_HEIGHT = 200;
+const int TOTAL_BUTTONS = 4;
+
+enum ButtonSprite
 {
+    BUTTON_SPRITE_MOUSE_OUT = 0,
+    BUTTON_SPRITE_MOUSE_OVER_MOTION = 1,
+    BUTTON_SPRITE_MOUSE_DOWN = 2,
+    BUTTON_SPRITE_MOUSE_UP = 3,
+    BUTTON_SPRITE_TOTAL = 4
+};
+bool init_sdl() {
     bool success = true;
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
