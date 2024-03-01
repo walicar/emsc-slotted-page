@@ -57,7 +57,7 @@ bool load_media()
         success = false;
     }
 
-    image = IMG_Load("src/smile.png");
+    image = IMG_Load("app/assets/smile.png");
     if (image == NULL)
     {
         printf("Unable to load image %s! SDL Error: %s\n", "smile.png", IMG_GetError());
