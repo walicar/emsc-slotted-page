@@ -3,3 +3,4 @@ build/
 test/index*
 web/assets/out*
 .vscode
+*.o
