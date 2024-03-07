@@ -25,11 +25,5 @@ main: $(OBJS) $(WEB_DIR)
 emhtml: $(OBJS) $(WEB_DIR)
 	$(CXX) -o test/index.html $(OBJS) $(LD_FLAGS)
 
-old-main: 
-	em++ app/src/main.cxx -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -o web/assets/out.js
-
-old-emhtml:
-	em++ app/src/main.cxx -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -o test/index.html 
-
 clean:
 	rm -f web/assets/out* test/index* *.o
