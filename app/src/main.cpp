@@ -13,8 +13,7 @@
 SDL_GLContext gl_context = NULL;
 SDL_Window *window = NULL;
 static bool done = false;
-static bool show_demo_window = true;
-static bool show_another_window = false;
+static bool show_demo_window = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 ImGuiIO *io = NULL;
 
@@ -62,7 +61,7 @@ bool init()
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
     SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+    window = SDL_CreateWindow("Slotted Page", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
     if (window == nullptr)
     {
         printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
@@ -137,40 +136,53 @@ static void mainloop(void)
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
     if (show_demo_window)
         ImGui::ShowDemoWindow(&show_demo_window);
 
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
     {
         static float f = 0.0f;
         static int counter = 0;
 
-        ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
+        ImGui::Begin("Slotted Page I/O"); // Create a window called "Hello, world!" and append into it.
 
-        ImGui::Text("This is some useful text.");          // Display some text (you can use a format strings too)
         ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
-        ImGui::Checkbox("Another Window", &show_another_window);
-
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);             // Edit 1 float using a slider from 0.0f to 1.0f
         ImGui::ColorEdit3("clear color", (float *)&clear_color); // Edit 3 floats representing a color
 
-        if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
+        ImGui::SeparatorText("DATA ENTRY");
+        ImGui::Text("Record Number: %d", counter);
+        static char str1[128] = "";
+        ImGui::InputText("Record Name", str1, IM_ARRAYSIZE(str1));
+        if (ImGui::Button("Enter")) // Buttons return true when clicked (most widgets return true when edited/activated)
             counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
+        ImGui::SeparatorText("DATA RETRIEVAL");
+        static char str2[128] = "";
+        static char str3[128] = "";
+        ImGui::InputText("Record Number", str2, IM_ARRAYSIZE(str2));
+        ImGui::Text("%s", str3);
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
         ImGui::End();
     }
 
-    // 3. Show another simple window.
-    if (show_another_window)
     {
-        ImGui::Begin("Another Window", &show_another_window); // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-        ImGui::Text("Hello from another window!");
-        if (ImGui::Button("Close Me"))
-            show_another_window = false;
+        ImGui::SetNextWindowPos(ImVec2(800,50));
+        ImGui::SetNextWindowSize(ImVec2(350, 550), ImGuiCond_FirstUseEver);
+
+        ImGui::Begin("Slotted Page Hex View");
+        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Hideable;
+        if (ImGui::BeginTable("table1", 8, flags))
+        {
+            for (int row = 0; row < 256; row++)
+            {
+                ImGui::TableNextRow();
+                for (int column = 0; column < 8; column++)
+                {
+                    ImGui::TableSetColumnIndex(column);
+                    ImGui::Text("%d-%d", column, row);
+                }
+            }
+            ImGui::EndTable();
+        }
         ImGui::End();
     }
 
