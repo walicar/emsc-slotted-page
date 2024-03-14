@@ -5,7 +5,7 @@ DAS::DAS() {
     _size = 0;
 }
 
-DAS::DAS(void* data, uint32_t size) {
+DAS::DAS(void* data, uint16_t size) {
     _data = data;
     _size = size;
 }
@@ -31,10 +31,10 @@ void DAS::set_data(void* data) {
     _data = data;
 }
 
-uint32_t DAS::get_size() const {
+uint16_t DAS::get_size() const {
     return _size;
 }
 
-void DAS::set_size(uint32_t size) {
+void DAS::set_size(uint16_t size) {
     _size = size;
 }
