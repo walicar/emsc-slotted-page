@@ -1,6 +1,7 @@
 node_modules/
 build/
-test/index*
+test
+tests/index*
 web/assets/out*
 .vscode
 *.o
