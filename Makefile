@@ -14,7 +14,7 @@ LD_FLAGS = --use-preload-plugins --preload-file app/assets/smile.png $(EMS_FLAGS
 TEST_DIR = tests/
 TEST_SRCS = $(filter-out $(SRC_DIR)/main.cpp, $(wildcard $(SRC_DIR)/*.cpp)) $(wildcard $(TEST_DIR)/*.cpp)
 TEST_OBJS = $(addsuffix .test.o, $(basename $(notdir $(TEST_SRCS))))
-TEST_FLAGS = -std=c++20 -I$(SRC_DIR) -I/opt/homebrew/Cellar/googletest/1.14.0/include 
+TEST_FLAGS = -std=c++20 -I$(SRC_DIR) -I/opt/homebrew/Cellar/googletest/1.14.0/include -g
 TEST_LD_FLAGS = -L/opt/homebrew/Cellar/googletest/1.14.0/lib -lgtest -lgtest_main -pthread
 
 %.o:$(SRC_DIR)/%.cpp
