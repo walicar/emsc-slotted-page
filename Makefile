@@ -36,10 +36,10 @@ main: $(OBJS) $(WEB_DIR)
 	$(CXX) -o $(WEB_DIR)/out.js $(OBJS) $(LD_FLAGS)
 
 emhtml: $(OBJS) $(WEB_DIR)
-	$(CXX) -o test/index.html $(OBJS) $(LD_FLAGS)
+	$(CXX) -o tests/index.html $(OBJS) $(LD_FLAGS)
 
 test: $(TEST_OBJS)
 	$(CXX_TEST) -o test $(TEST_OBJS) $(TEST_LD_FLAGS)
 
 clean:
-	rm -f web/assets/out* test/index* *.o *.test.o tester
+	rm -f web/assets/out* tests/index* *.o *.test.o tester

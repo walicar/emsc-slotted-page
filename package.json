@@ -4,8 +4,8 @@
   "description": "",
   "main": "localserver.js",
   "scripts": {
-    "dev": "nodemon test/local.js",
-    "emhtml": "emrun test/index.html --browser firefox",
+    "dev": "nodemon tests/local.js",
+    "emhtml": "emrun tests/index.html --browser firefox",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
