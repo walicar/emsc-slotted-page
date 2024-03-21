@@ -1,9 +1,5 @@
 #include "slotted_page.h"
 
-/**
- * @TOFIX: BSearch, don't use actual locations
-*/
-
 SlottedPage::SlottedPage() {
     // init memory
     char* data = new char[BLOCK_SZ]; // don't statically allocate this
@@ -36,26 +32,26 @@ void SlottedPage::put(const DAS *key, const DAS *value) {
 
     uint16_t left = 0;
     uint16_t right = num_records;
-    std::string t_key((char*) key->get_data(), key->get_size());
+    std::string t_key((char*) key->get_data(), key->get_size()); // target key
 
     while (left < right) {
         uint16_t mid = left + (right - left)/2;
         uint16_t p_loc = (mid * PTR_SIZE) + HDR_SIZE; // calculate actual ptr cell location
-        uint16_t c_loc = get_n(p_loc);
-        uint16_t c_key_size = get_n(p_loc + 2);
-        uint16_t c_value_size = get_n(p_loc + 4);
-        std::string c_key((char*) address(c_loc), c_key_size);
+        uint16_t i_loc = get_n(p_loc); // get info cell location
+        uint16_t i_key_size = get_n(p_loc + 2);
+        uint16_t i_val_size = get_n(p_loc + 4);
+        std::string c_key((char*) address(i_loc), i_key_size); // current key
 
         if (c_key == t_key) { 
             // update the record 
-            uint16_t value_loc = c_loc + c_key_size;
-            if (value->get_size() > c_value_size) {
-                uint16_t extra = value->get_size() - c_value_size;
+            uint16_t value_loc = i_loc + i_key_size;
+            if (value->get_size() > i_val_size) {
+                uint16_t extra = value->get_size() - i_val_size;
                 slide(value_loc, value_loc - extra);
                 memcpy(address(value_loc - extra), value->get_data(), value->get_size());
             } else {
                 memcpy(address(value_loc), value->get_data(), value->get_size());
-                slide(value_loc + value->get_size(), value_loc + c_value_size);
+                slide(value_loc + value->get_size(), value_loc + i_val_size);
             }
             return;
         }
@@ -68,20 +64,20 @@ void SlottedPage::put(const DAS *key, const DAS *value) {
     }
     // append new record
 
-    uint16_t loc = end_free - key->get_size() - value->get_size();
-    set_n(END_FREE_LOC, loc - 1);
+    uint16_t i_loc = end_free - key->get_size() - value->get_size();
+    set_n(END_FREE_LOC, i_loc - 1);
 
     // add pointer cell
     // left and right shouldve converged at this point
-    uint16_t p_loc = (left * PTR_SIZE) + HDR_SIZE; // calculate actual ptr cell location
+    uint16_t p_loc = (left * PTR_SIZE) + HDR_SIZE;
     memmove(address(p_loc + PTR_SIZE), address(p_loc), PTR_SIZE); // make space
-    set_n(p_loc, loc);
+    set_n(p_loc, i_loc);
     set_n(p_loc + 2, key->get_size());
     set_n(p_loc + 4, value->get_size());
 
     // add value cell
-    memcpy(address(loc), key->get_data(), key->get_size());
-    memcpy(address(loc + key->get_size()), value->get_data(), value->get_size());
+    memcpy(address(i_loc), key->get_data(), key->get_size());
+    memcpy(address(i_loc + key->get_size()), value->get_data(), value->get_size());
 
     // update header
     set_n(NUM_REC_LOC, num_records + 1);
@@ -116,21 +112,20 @@ void SlottedPage::slide(uint16_t start, uint16_t end) {
 
 DAS* SlottedPage::get(const DAS *key) {
     uint16_t num_records = get_n(NUM_REC_LOC);
-    // locations of leftmost pointer entry, and rightmost pointer entry
     uint16_t left = 0;
     uint16_t right = num_records;
-    std::string t_key((char*) key->get_data() + sizeof(uint16_t), key->get_size());
+    std::string t_key((char*) key->get_data() + sizeof(uint16_t), key->get_size()); // target key
 
     while (left <= right) {
         uint16_t mid = left + (right - left)/2;
-        uint16_t p_loc = (mid * PTR_SIZE) + HDR_SIZE;
-        uint16_t c_loc = get_n(p_loc);
+        uint16_t p_loc = (mid * PTR_SIZE) + HDR_SIZE; // calculate actual ptr cell location
+        uint16_t i_loc = get_n(p_loc); // get info cell location
         uint16_t key_size = get_n(p_loc + 2);
-        uint16_t value_size = get_n(p_loc + 4);
-        std::string c_key((char*) address(c_loc) + sizeof(uint16_t), key_size);
+        uint16_t val_size = get_n(p_loc + 4);
+        std::string c_key((char*) address(i_loc) + sizeof(uint16_t), key_size);
 
         if (strcmp(t_key.c_str(), c_key.c_str())) { // can't use == operator
-            return new DAS(address(c_loc + key_size), value_size);
+            return new DAS(address(i_loc + key_size), val_size);
         }
 
         if (c_key > t_key) {
