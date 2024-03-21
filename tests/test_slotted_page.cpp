@@ -27,6 +27,33 @@ namespace
 		delete value;
 		delete page;
 	}
+
+	TEST(slotted_page, multiple_keys) {
+		SlottedPage *page = new SlottedPage();
+		ASSERT_EQ(page->size(), 0);
+		DAS *a_key = marshal_text("miles");
+		DAS *a_val = marshal_text("davis");
+		page->put(a_key, a_val);
+		ASSERT_EQ(page->size(), 1);
+		DAS *a_get = page->get(a_key);
+		std::string a_get_val = unmarshal_text(*a_get);
+		ASSERT_EQ("davis", a_get_val);
+		DAS *b_key = marshal_text("john");
+		DAS *b_val = marshal_text("coltrane");
+		page->put(b_key, b_val);
+		ASSERT_EQ(page->size(), 2);
+		DAS *b_get = page->get(b_key);
+		std::string b_get_val = unmarshal_text(*b_get);
+		ASSERT_EQ("coltrane", b_get_val);
+
+		delete a_key;
+		delete a_val;
+		delete a_get;
+		delete b_key;
+		delete b_val;
+		delete b_get;
+		delete page;
+	}
 }
 
 DAS *marshal_text(std::string text)
