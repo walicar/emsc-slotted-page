@@ -42,7 +42,7 @@ void SlottedPage::put(const DAS *key, const DAS *value) {
         uint16_t i_val_size = get_n(p_loc + 4);
         std::string c_key((char*) address(i_loc), i_key_size); // current key
 
-        if (c_key == t_key) { 
+        if (strcmp(t_key.c_str(), c_key.c_str())) { 
             // update the record 
             uint16_t value_loc = i_loc + i_key_size;
             if (value->get_size() > i_val_size) {
@@ -57,9 +57,9 @@ void SlottedPage::put(const DAS *key, const DAS *value) {
         }
 
         if (c_key > t_key) {
-            left = mid + 1;
-        } else {
             right = mid - 1;
+        } else {
+            left = mid + 1;
         }
     }
     // append new record
@@ -114,7 +114,7 @@ DAS* SlottedPage::get(const DAS *key) {
     uint16_t num_records = get_n(NUM_REC_LOC);
     uint16_t left = 0;
     uint16_t right = num_records;
-    std::string t_key((char*) key->get_data() + sizeof(uint16_t), key->get_size()); // target key
+    std::string t_key((char*) key->get_data(), key->get_size()); // target key
 
     while (left <= right) {
         uint16_t mid = left + (right - left)/2;
@@ -122,16 +122,16 @@ DAS* SlottedPage::get(const DAS *key) {
         uint16_t i_loc = get_n(p_loc); // get info cell location
         uint16_t key_size = get_n(p_loc + 2);
         uint16_t val_size = get_n(p_loc + 4);
-        std::string c_key((char*) address(i_loc) + sizeof(uint16_t), key_size);
+        std::string c_key((char*) address(i_loc), key_size);
 
-        if (strcmp(t_key.c_str(), c_key.c_str())) { // can't use == operator
+        if (strcmp(t_key.c_str(), c_key.c_str()) == 0) { // can't use == operator
             return new DAS(address(i_loc + key_size), val_size);
         }
 
         if (c_key > t_key) {
-            left = mid + 1;
-        } else {
             right = mid - 1;
+        } else {
+            left = mid + 1;
         }
     }
     return new DAS(nullptr, 0); // could not find key-value pair
