@@ -50,7 +50,7 @@ void SlottedPage::put(const DAS *key, const DAS *value) {
         memcpy(&c_size, c_bytes, sizeof(uint16_t));
         std::string c_key(c_bytes + sizeof(uint16_t), c_size);
 
-        if (strcmp(t_key.c_str(), c_key.c_str())) { 
+        if (strcmp(t_key.c_str(), c_key.c_str()) == 0) { 
             // update the record 
             uint16_t value_loc = i_loc + i_key_size;
             if (value->get_size() > i_val_size) {
@@ -64,10 +64,10 @@ void SlottedPage::put(const DAS *key, const DAS *value) {
             return;
         }
 
-        if (c_key > t_key) {
-            right = mid - 1;
-        } else {
+        if (t_key < c_key) {
             left = mid + 1;
+        } else {
+            right = mid - 1;
         }
     }
     // append new record
@@ -144,10 +144,10 @@ DAS* SlottedPage::get(const DAS *key) {
             return new DAS(address(i_loc + key_size), val_size);
         }
 
-        if (c_key > t_key) {
-            right = mid - 1;
-        } else {
+        if (t_key < c_key) {
             left = mid + 1;
+        } else {
+            right = mid - 1;
         }
     }
     return new DAS(nullptr, 0); // could not find key-value pair
