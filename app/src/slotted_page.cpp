@@ -32,7 +32,11 @@ void SlottedPage::put(const DAS *key, const DAS *value) {
 
     uint16_t left = 0;
     uint16_t right = num_records;
-    std::string t_key((char*) key->get_data(), key->get_size()); // target key
+    // get target key
+    char *t_bytes = (char *)key->get_data();
+    uint16_t t_size;
+    memcpy(&t_size, t_bytes, sizeof(uint16_t));
+    std::string t_key(t_bytes + sizeof(uint16_t), t_size);
 
     while (left < right) {
         uint16_t mid = left + (right - left)/2;
@@ -40,7 +44,11 @@ void SlottedPage::put(const DAS *key, const DAS *value) {
         uint16_t i_loc = get_n(p_loc); // get info cell location
         uint16_t i_key_size = get_n(p_loc + 2);
         uint16_t i_val_size = get_n(p_loc + 4);
-        std::string c_key((char*) address(i_loc), i_key_size); // current key
+        // get current key
+        char *c_bytes = (char *)address(i_loc);
+        uint16_t c_size;
+        memcpy(&c_size, c_bytes, sizeof(uint16_t));
+        std::string c_key(c_bytes + sizeof(uint16_t), c_size);
 
         if (strcmp(t_key.c_str(), c_key.c_str())) { 
             // update the record 
@@ -114,7 +122,11 @@ DAS* SlottedPage::get(const DAS *key) {
     uint16_t num_records = get_n(NUM_REC_LOC);
     uint16_t left = 0;
     uint16_t right = num_records;
-    std::string t_key((char*) key->get_data(), key->get_size()); // target key
+    // get target key
+    char *t_bytes = (char *)key->get_data();
+    uint16_t t_size;
+    memcpy(&t_size, t_bytes, sizeof(uint16_t));
+    std::string t_key(t_bytes + sizeof(uint16_t), t_size);
 
     while (left <= right) {
         uint16_t mid = left + (right - left)/2;
@@ -122,7 +134,11 @@ DAS* SlottedPage::get(const DAS *key) {
         uint16_t i_loc = get_n(p_loc); // get info cell location
         uint16_t key_size = get_n(p_loc + 2);
         uint16_t val_size = get_n(p_loc + 4);
-        std::string c_key((char*) address(i_loc), key_size);
+        // get current key
+        char *c_bytes = (char *)address(i_loc);
+        uint16_t c_size;
+        memcpy(&c_size, c_bytes, sizeof(uint16_t));
+        std::string c_key(c_bytes + sizeof(uint16_t), c_size);
 
         if (strcmp(t_key.c_str(), c_key.c_str()) == 0) { // can't use == operator
             return new DAS(address(i_loc + key_size), val_size);
