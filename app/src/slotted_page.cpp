@@ -140,6 +140,10 @@ DAS* SlottedPage::get(const DAS *key) {
         memcpy(&c_size, c_bytes, sizeof(uint16_t));
         std::string c_key(c_bytes + sizeof(uint16_t), c_size);
 
+        if (p_loc == 0) {
+            return new DAS(nullptr, 0);
+        }
+
         if (strcmp(t_key.c_str(), c_key.c_str()) == 0) { // can't use == operator
             return new DAS(address(i_loc + key_size), val_size);
         }
@@ -151,6 +155,41 @@ DAS* SlottedPage::get(const DAS *key) {
         }
     }
     return new DAS(nullptr, 0); // could not find key-value pair
+}
+
+void SlottedPage::del(const DAS* key) {
+    uint16_t num_records = get_n(NUM_REC_LOC);
+    uint16_t left = 0;
+    uint16_t right = num_records;
+    // get target key
+    char *t_bytes = (char *)key->get_data();
+    uint16_t t_size;
+    memcpy(&t_size, t_bytes, sizeof(uint16_t));
+    std::string t_key(t_bytes + sizeof(uint16_t), t_size);
+
+    while (num_records > 0 && left <= right) {
+        uint16_t mid = left + (right - left)/2;
+        uint16_t p_loc = (mid * PTR_SIZE) + HDR_SIZE; // calculate actual ptr cell location
+        uint16_t i_loc = get_n(p_loc); // get info cell location
+        uint16_t key_size = get_n(p_loc + 2);
+        uint16_t val_size = get_n(p_loc + 4);
+        // get current key
+        char *c_bytes = (char *)address(i_loc);
+        uint16_t c_size;
+        memcpy(&c_size, c_bytes, sizeof(uint16_t));
+        std::string c_key(c_bytes + sizeof(uint16_t), c_size);
+
+        if (strcmp(t_key.c_str(), c_key.c_str()) == 0) { // can't use == operator
+            set_n(p_loc, 0);
+            return;
+        }
+
+        if (t_key < c_key) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
 }
 
 std::vector<DAS*> SlottedPage::list() { // list keys

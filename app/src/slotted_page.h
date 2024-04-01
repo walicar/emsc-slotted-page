@@ -23,6 +23,8 @@ class SlottedPage {
 
         DAS *get(const DAS *key);
 
+        void del(const DAS *key);
+
         std::vector<DAS*> list(void);
 
         int size();

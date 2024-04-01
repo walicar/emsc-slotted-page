@@ -107,6 +107,24 @@ namespace
 		delete key;
 		delete page;
 	}
+
+	TEST(slotted_page, del_key) {
+		SlottedPage *page = new SlottedPage();
+		ASSERT_EQ(page->size(), 0);
+		DAS *key = marshal_text("miles");
+		DAS *value = marshal_text("davis");
+		page->put(key, value);
+		ASSERT_EQ(page->size(), 1);
+		DAS *get = page->get(key);
+		std::string get_value = unmarshal_text(*get);
+		ASSERT_EQ("davis", get_value);
+		page->del(key);
+		get = page->get(key);
+		ASSERT_EQ(nullptr, get->get_data());
+		delete key;
+		delete value;
+		delete page;
+	}
 }
 
 DAS *marshal_text(std::string text)
