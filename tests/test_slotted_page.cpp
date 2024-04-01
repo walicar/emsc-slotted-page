@@ -97,7 +97,16 @@ namespace
 		delete d_get;
 		delete page;
 	}
-
+	
+	TEST(slotted_page, get_key_that_DNE) {
+		SlottedPage *page = new SlottedPage();
+		ASSERT_EQ(page->size(), 0);
+		DAS *key = marshal_text("miles");
+		DAS *get = page->get(key);
+		ASSERT_EQ(nullptr, get->get_data());
+		delete key;
+		delete page;
+	}
 }
 
 DAS *marshal_text(std::string text)
