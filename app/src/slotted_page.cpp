@@ -38,7 +38,7 @@ void SlottedPage::put(const DAS *key, const DAS *value) {
     memcpy(&t_size, t_bytes, sizeof(uint16_t));
     std::string t_key(t_bytes + sizeof(uint16_t), t_size);
 
-    while (left < right) {
+    while (num_records > 0 && left <= right) {
         uint16_t mid = left + (right - left)/2;
         uint16_t p_loc = (mid * PTR_SIZE) + HDR_SIZE; // calculate actual ptr cell location
         uint16_t i_loc = get_n(p_loc); // get info cell location
