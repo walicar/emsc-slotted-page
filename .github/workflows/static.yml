@@ -35,10 +35,8 @@ jobs:
           submodules: true
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Download Emscripten
-        run: brew install emscripten
-      - name: Download SDL2
-        run: brew install sdl2
+      - name: Download Deps
+        run: brew install emscripten sdl2
       - name: Compile
         run: make
       - name: Upload artifact

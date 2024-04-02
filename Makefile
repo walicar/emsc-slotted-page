@@ -7,9 +7,9 @@ SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 SRCS += $(wildcard $(IMGUI_DIR)/*.cpp)
 SRCS += $(IMGUI_DIR)/backends/imgui_impl_sdl2.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 OBJS = $(addsuffix .o, $(basename $(notdir $(SRCS))))
-CPP_FLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I/opt/homebrew/Cellar/sdl2/2.30.1/include
+CPP_FLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
 EMS_FLAGS = --use-port=sdl2
-LD_FLAGS = -L/opt/homebrew/Cellar/sdl2/2.30.1/lib --use-preload-plugins --preload-file app/assets/smile.png $(EMS_FLAGS) -sALLOW_MEMORY_GROWTH # FIXME: remove assets
+LD_FLAGS = --use-preload-plugins --preload-file app/assets/smile.png $(EMS_FLAGS) -sALLOW_MEMORY_GROWTH # FIXME: remove assets
 
 TEST_DIR = tests/
 TEST_SRCS = $(filter-out $(SRC_DIR)/main.cpp, $(wildcard $(SRC_DIR)/*.cpp)) $(wildcard $(TEST_DIR)/*.cpp)
