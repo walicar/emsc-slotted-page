@@ -8,6 +8,7 @@
 #include <emscripten.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "slotted_page.h"
 
 // State
 SDL_GLContext gl_context = NULL;
@@ -16,6 +17,8 @@ static bool done = false;
 static bool show_demo_window = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 ImGuiIO *io = NULL;
+
+SlottedPage *g_page = NULL;
 
 bool init()
 {
@@ -99,6 +102,9 @@ bool init()
         printf("opengl3 imgui init BAD\n");
         return false;
     }
+
+    // Initialize Page
+    g_page = new SlottedPage();
     return success;
 }
 
@@ -170,15 +176,16 @@ static void mainloop(void)
 
         ImGui::Begin("Slotted Page Hex View");
         static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Hideable;
+        auto bytes = g_page->show();
         if (ImGui::BeginTable("table1", 8, flags))
         {
-            for (int row = 0; row < 256; row++)
+            for (int row = 0; row < 512; row++)
             {
                 ImGui::TableNextRow();
                 for (int column = 0; column < 8; column++)
                 {
                     ImGui::TableSetColumnIndex(column);
-                    ImGui::Text("%d-%d", column, row);
+                    ImGui::Text("%s", bytes[row][column]->c_str());
                 }
             }
             ImGui::EndTable();
