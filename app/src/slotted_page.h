@@ -29,6 +29,8 @@ class SlottedPage {
 
         int size();
 
+        std::vector<std::vector<std::string*>> const show();
+
     private:
 
         void slide(uint16_t start, uint16_t end);

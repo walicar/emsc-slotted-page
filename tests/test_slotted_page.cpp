@@ -125,6 +125,18 @@ namespace
 		delete value;
 		delete page;
 	}
+
+	TEST(slotted_page, show_does_not_crash) {
+		SlottedPage *page = new SlottedPage();
+		DAS *key = marshal_text("miles");
+		DAS *value = marshal_text("davis");
+		page->put(key, value);
+		DAS *get = page->get(key);
+		std::string get_value = unmarshal_text(*get);
+		ASSERT_EQ("davis", get_value);
+		auto byte_array = page->show();
+	}
+	
 }
 
 DAS *marshal_text(std::string text)

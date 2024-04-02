@@ -192,6 +192,21 @@ void SlottedPage::del(const DAS* key) {
     }
 }
 
+std::vector<std::vector<std::string*>> const SlottedPage::show() {
+    void *bytes = block.get_data();
+    std::vector<std::vector<std::string*>> result(512, std::vector<std::string*>(8, nullptr));
+    for (int i = 0; i < 512; i++) {
+        for (int j = 0; j < 8; j++) {
+            uint16_t loc = (i * 8) + j;
+            void* byte = address(loc);
+            char hex[3];
+            snprintf(hex, sizeof(hex), "%02X", *(unsigned char*)byte);
+            result[i][j] = new std::string(hex);
+        }
+    }
+    return result;
+}
+
 std::vector<DAS*> SlottedPage::list() { // list keys
     std::vector<DAS*> res;
     uint16_t num_records = get_n(NUM_REC_LOC);
