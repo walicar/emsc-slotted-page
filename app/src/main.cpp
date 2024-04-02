@@ -14,8 +14,7 @@
 SDL_GLContext gl_context = NULL;
 SDL_Window *window = NULL;
 static bool done = false;
-static bool show_demo_window = false;
-ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+ImVec4 clear_color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 ImGuiIO *io = NULL;
 
 SlottedPage *g_page = NULL;
@@ -119,6 +118,32 @@ void close()
     SDL_Quit();
 }
 
+DAS *marshal_text(std::string text)
+{
+    uint size = text.length();
+    uint offset = 0;
+
+    char *bytes = new char[BLOCK_SZ];
+    *(u_int16_t *)(bytes + offset) = size;
+    offset += sizeof(u_int16_t);
+    memcpy(bytes + offset, text.c_str(), size);
+    offset += size;
+
+    char *right_size_bytes = new char[offset];
+    memcpy(right_size_bytes, bytes, offset);
+    delete[] bytes;
+    return new DAS(right_size_bytes, offset);
+}
+
+std::string unmarshal_text(DAS &data)
+{
+    char *bytes = (char *)data.get_data();
+    u_int16_t size;
+    memcpy(&size, bytes, sizeof(u_int16_t));
+    std::string text(bytes + sizeof(u_int16_t), size);
+    return text;
+}
+
 static void mainloop(void)
 {
     if (done)
@@ -142,29 +167,56 @@ static void mainloop(void)
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    if (show_demo_window)
-        ImGui::ShowDemoWindow(&show_demo_window);
 
     {
         static float f = 0.0f;
-        static int counter = 0;
 
         ImGui::Begin("Slotted Page I/O"); // Create a window called "Hello, world!" and append into it.
 
-        ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
-        ImGui::ColorEdit3("clear color", (float *)&clear_color); // Edit 3 floats representing a color
-
         ImGui::SeparatorText("DATA ENTRY");
-        ImGui::Text("Record Number: %d", counter);
-        static char str1[128] = "";
-        ImGui::InputText("Record Name", str1, IM_ARRAYSIZE(str1));
-        if (ImGui::Button("Enter")) // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
+        ImGui::Text("Record Number: %d", g_page->size());
+        static char put_key[128] = "";
+        static char put_val[128] = "";
+        ImGui::InputText("Key##put", put_key, IM_ARRAYSIZE(put_key));
+        ImGui::InputText("Value##put", put_val, IM_ARRAYSIZE(put_val));
+        if (ImGui::Button("Put Record")) // Buttons return true when clicked (most widgets return true when edited/activated)
+            {
+                DAS *key = marshal_text(put_key);
+		        DAS *val = marshal_text(put_val);
+                g_page->put(key, val);
+                // do we delete?
+            }
         ImGui::SeparatorText("DATA RETRIEVAL");
-        static char str2[128] = "";
-        static char str3[128] = "";
-        ImGui::InputText("Record Number", str2, IM_ARRAYSIZE(str2));
-        ImGui::Text("%s", str3);
+        static char get_key[128] = "";
+        static char *get_value = nullptr;
+        ImGui::InputText("Key##get", get_key, IM_ARRAYSIZE(get_key));
+        ImGui::Text("%s", get_value);
+
+        if (ImGui::Button("Get Record"))
+            {
+                DAS *key = marshal_text(get_key);
+                DAS *data = g_page->get(key);
+                if (data->get_data()) {
+		            auto get_str = new std::string(unmarshal_text(*data));
+                    get_value = &(*get_str)[0];
+                } else {
+                    get_value = nullptr;
+                }
+                delete key;
+            }
+
+        ImGui::SeparatorText("DATA MANAGEMENT");
+        static char del_key[128] = "nothing";
+        ImGui::InputText("Key##del", del_key, IM_ARRAYSIZE(del_key));
+        ImGui::Text("%s marked for deletion", del_key);
+
+        if (ImGui::Button("Delete Record"))
+            {
+                DAS *key = marshal_text(del_key);
+                g_page->del(key);
+                delete key;
+            }
+
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
         ImGui::End();
@@ -204,8 +256,6 @@ static void mainloop(void)
 
 int main(int argc, char *argv[])
 {
-    // EM_ASM({ console.log('Hello'); });
-    // SDL stuff
     if (!init())
     {
         printf("Failed to initialize!\n");
