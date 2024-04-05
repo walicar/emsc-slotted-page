@@ -25,7 +25,7 @@ TEST_FLAGS = -std=c++20 -I$(SRC_DIR) -I$(GTEST_DIR)/include -g
 TEST_LD_FLAGS = -L$(GTEST_DIR)/lib -lgtest -lgtest_main -pthread
 
 %.o:$(SRC_DIR)/%.cpp
-	$(CXX) $(CPP_FLAGS) -c -o $@ $<
+	$(CXX) $(CPP_FLAGS) $(EMS_FLAGS) -c -o $@ $<
 
 %.o:$(IMGUI_DIR)/%.cpp
 	$(CXX) $(CPP_FLAGS) $(EMS_FLAGS) -c -o $@ $<
