@@ -37,6 +37,8 @@ jobs:
         uses: actions/configure-pages@v4
       - name: Download Deps
         run: brew install emscripten sdl2
+      - name: Check SDL2
+        run: which sdl2-config && sdl2-config --cflags
       - name: Compile
         run: make
       - name: Upload artifact
