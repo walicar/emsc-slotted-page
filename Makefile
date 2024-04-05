@@ -12,7 +12,7 @@ SRCS += $(IMGUI_DIR)/backends/imgui_impl_sdl2.cpp $(IMGUI_DIR)/backends/imgui_im
 OBJS = $(addsuffix .o, $(basename $(notdir $(SRCS))))
 
 CPP_FLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
-EMS_FLAGS = --use-port=sdl2 $(shell sdl2-config --cflags)
+EMS_FLAGS = --use-port=sdl2
 LD_FLAGS =  --use-preload-plugins --preload-file app/assets/smile.png $(EMS_FLAGS) -sALLOW_MEMORY_GROWTH # FIXME: remove assets
 
 GTEST_VER := $(shell brew list --versions googletest | awk '{print $$2}')
