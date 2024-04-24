@@ -170,7 +170,7 @@ static void mainloop(void)
 
     {
         static float f = 0.0f;
-
+        ImGui::SetNextWindowPos(ImVec2(50,10), ImGuiCond_FirstUseEver);
         ImGui::Begin("Slotted Page I/O"); // Create a window called "Hello, world!" and append into it.
 
         ImGui::SeparatorText("DATA ENTRY");
@@ -223,8 +223,7 @@ static void mainloop(void)
     }
 
     {
-        ImGui::SetNextWindowPos(ImVec2(800,50));
-        ImGui::SetNextWindowSize(ImVec2(350, 550), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowPos(ImVec2(400,10), ImGuiCond_FirstUseEver);
 
         ImGui::Begin("Slotted Page Hex View");
         static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Hideable;
