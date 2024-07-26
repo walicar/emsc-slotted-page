@@ -1,8 +1,9 @@
-const express = require("express");
-const path = require("path");
+import express from 'express';
+import path from 'path';
+
 const app = express();
 
-var dir = path.join(__dirname, "..");
+var dir = path.join(import.meta.dirname, "..");
 
 app.use(
   "/assets",
@@ -14,10 +15,6 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  // Required headers for pthread: https://emscripten.org/docs/porting/pthreads.html
-  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-  res.setHeader("Cross-Origin-Resource-Policy", "same-site");
   res.sendFile(path.join(dir, "web/index.html"));
 });
 

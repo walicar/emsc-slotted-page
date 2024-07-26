@@ -1,14 +1,13 @@
 {
-  "name": "playground",
+  "name": "slotted_page",
   "version": "1.0.0",
-  "description": "",
-  "main": "localserver.js",
+  "type" : "module",
   "scripts": {
     "dev": "nodemon tests/local.js",
     "emhtml": "emrun tests/index.html --browser firefox",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Will Alicar",
   "license": "MIT",
   "devDependencies": {
     "express": "^4.18.2",

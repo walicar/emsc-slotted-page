@@ -5,3 +5,4 @@ tests/index*
 web/assets/out*
 .vscode
 *.o
+.DS_Store
