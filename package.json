@@ -1,5 +1,5 @@
 {
-  "name": "slotted_page",
+  "name": "emsc-slotted-page",
   "version": "1.0.0",
   "type" : "module",
   "scripts": {

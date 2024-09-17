@@ -1,4 +1,4 @@
-# Slotted Page
+# emsc-slotted-page
 
 ![docs/slotted_page.png](docs/slotted_page.png)
 
